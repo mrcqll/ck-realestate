@@ -1,0 +1,24 @@
+{% extends "admin/login.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'properties/css/realtor_login.css' %}">
+{% endblock %}
+
+{% block branding %}
+<a class="realtor-brand" href="{% url 'home' %}"><span class="brand-mark" aria-hidden="true">CK</span><span>CK Realestate<span class="brand-caption">Realtor workspace</span></span></a>
+{% endblock %}
+
+{% block content_title %}
+<div class="login-intro">
+    <p class="login-eyebrow">WELCOME BACK</p>
+    <h1>Realtor Login</h1>
+    <p>Sign in to manage your listings and keep things moving.</p>
+</div>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+<p class="login-footer"><a href="{% url 'home' %}">← Back to CK Realestate</a></p>
+{% endblock %}

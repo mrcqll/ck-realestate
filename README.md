@@ -99,3 +99,53 @@ python -m pip freeze > requirements.txt
 ```
 
 Commit the updated requirements file.
+## Realtor login (User Story #7)
+
+The public homepage remains available without signing in. Follow **Realtor Login**
+from the homepage or visit `/admin/login/`. Successful login opens the existing
+Django administration area at `/admin/`; safe local `next` destinations are also
+supported. Use the admin's **Log out** button to end the session (CSRF-protected
+POST only).
+
+Realtors use Django's existing user model. An account must be both **Active**
+(`is_active`) and **Staff status** (`is_staff`) to sign in to administration.
+Staff access does not grant model permissions: assign only the required permissions
+or groups in the existing Users administration page. Authenticated non-staff users
+receive HTTP 403 from administrative pages and actions.
+
+To bootstrap an administrator, activate the virtual environment and run:
+
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+Enter credentials interactively; do not commit or share them. Sign in with that
+account, open **Authentication and Authorization → Users**, and create or select
+the Realtor account. Enable **Active** and **Staff status**, assign the required
+permissions, and save. Reserve superuser access for trusted administrators.
+There is no public account registration. This story adds no models or migrations.
+
+Settings now load `.env` using the existing `python-dotenv` dependency:
+
+- `DJANGO_SECRET_KEY`: a privately generated secret key, required at startup.
+- `DJANGO_DEBUG=True`: local HTTP development; set `False` for production.
+- `DJANGO_ALLOWED_HOSTS`: comma-separated permitted hostnames.
+
+With debug disabled, session and CSRF cookies require HTTPS. Serve production over
+HTTPS and configure TLS redirects at the hosting layer. Session cookies remain
+HTTP-only; session and CSRF cookies use SameSite=Lax. Configure proxy trust only
+for your actual deployment. Do not use the example secret in production.
+
+Run the focused authentication tests and configuration checks:
+
+```bash
+python manage.py test
+python manage.py check
+```
+
+The current application has no property models or browsing pages beyond the
+public homepage. The tests exercise the existing admin user/group management
+pages, direct GET/POST access, staff model permissions, generic authentication
+failures, redirects, CSRF, logout, and public homepage access. Future property
+models should be registered with the existing admin to inherit these protections.
