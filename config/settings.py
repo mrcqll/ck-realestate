@@ -35,13 +35,13 @@ ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "").
 # Application definition
 
 INSTALLED_APPS = [
+    "properties",
     "config.apps.RealtorAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "properties",
 ]
 
 MIDDLEWARE = [
