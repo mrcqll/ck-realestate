@@ -99,9 +99,8 @@ class RealtorLoginTests(TestCase):
         response = client.post(logout_url, {
             "csrfmiddlewaretoken": client.cookies["csrftoken"].value,
         })
-        self.assertRedirects(response, reverse("home"))
+        self.assertRedirects(response, reverse("home") + "?logged_out=1")
         self.assertNotIn("_auth_user_id", client.session)
-        self.assertEqual(client.get(reverse("admin:index")).status_code, 302)
 
     def test_admin_has_post_logout_control(self):
         self.client.force_login(self.realtor)
@@ -112,3 +111,54 @@ class RealtorLoginTests(TestCase):
 
     def test_public_home_remains_available(self):
         self.assertContains(self.client.get(reverse("home")), "CK Realestate")
+
+    def test_logout_control_is_consistent_across_admin_sections(self):
+        from django.contrib.auth.models import Permission
+
+        self.realtor.user_permissions.add(Permission.objects.get(codename="view_user"))
+        self.client.force_login(self.realtor)
+        targets = [
+            reverse("admin:index"),
+            reverse("admin:auth_user_changelist"),
+            reverse("admin:password_change"),
+        ]
+        for target in targets:
+            with self.subTest(target=target):
+                response = self.client.get(target)
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, 'id="logout-form"')
+                self.assertContains(response, 'method="post"')
+                self.assertContains(response, 'action="/admin/logout/"')
+
+    def test_logout_ends_session_and_returns_to_public_logged_out_result(self):
+        self.client.force_login(self.realtor)
+
+        response = self.client.post(reverse("admin:logout"))
+
+        self.assertRedirects(response, reverse("home") + "?logged_out=1")
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+        home = self.client.get(reverse("home") + "?logged_out=1")
+        self.assertContains(home, "You have been logged out.")
+
+    def test_old_session_cannot_access_or_submit_admin_requests_after_logout(self):
+        self.client.force_login(self.realtor)
+        old_cookie = self.client.cookies["sessionid"].value
+        self.client.post(reverse("admin:logout"))
+
+        self.client.cookies["sessionid"] = old_cookie
+        targets = [
+            reverse("admin:index"),
+            reverse("admin:auth_user_changelist"),
+            reverse("admin:auth_user_add"),
+        ]
+        for target in targets:
+            with self.subTest(method="get", target=target):
+                response = self.client.get(target)
+                self.assertEqual(response.status_code, 302)
+                self.assertTrue(response.url.startswith(reverse("admin:login") + "?next="))
+            with self.subTest(method="post", target=target):
+                response = self.client.post(target, {"username": "intruder"})
+                self.assertIn(response.status_code, (302, 403))
+
+        self.assertEqual(get_user_model().objects.filter(username="intruder").count(), 0)
