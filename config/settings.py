@@ -135,3 +135,6 @@ CSRF_COOKIE_SAMESITE = "Lax"
 LOGIN_URL = "admin:login"
 LOGIN_REDIRECT_URL = "admin:index"
 LOGOUT_REDIRECT_URL = "home"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
