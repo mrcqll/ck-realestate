@@ -1,8 +1,11 @@
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import permission_required
+from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.views.static import serve
 
 from .forms import ListingForm
 
@@ -21,6 +24,7 @@ def home(request):
 
 
 @staff_member_required
+@permission_required("properties.add_listing", raise_exception=True)
 def add_listing(request):
     if request.method == "POST":
         form = ListingForm(request.POST, request.FILES)
@@ -31,3 +35,9 @@ def add_listing(request):
     else:
         form = ListingForm()
     return render(request, "properties/add_listing.html", {"form": form})
+
+
+@staff_member_required
+@permission_required("properties.view_listing", raise_exception=True)
+def listing_media(request, path):
+    return serve(request, path, document_root=settings.MEDIA_ROOT, show_indexes=False)
