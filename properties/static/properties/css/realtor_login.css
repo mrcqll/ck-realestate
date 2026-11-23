@@ -1,0 +1,134 @@
+/* Scoped to the login page; the administration interface keeps its own styling. */
+body.login {
+    --body-bg: #ffffff;
+    --body-fg: #091a3e;
+    --error-fg: #a12626;
+    --border-color: #b7c8d6;
+    --hairline-color: #d1deea;
+    --link-fg: #06306c;
+    color-scheme: light;
+    --darkened-bg: #eef3f8;
+    --link-hover-color: #007e75;
+    min-height: 100vh;
+    background: #f6f9fc;
+    font-family: Arial, sans-serif;
+}
+.login #container {
+    width: 510px;
+    max-width: calc(100% - 32px);
+    min-width: 0;
+    margin: clamp(32px, 10vh, 110px) auto;
+    border: 1px solid #d1deea;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px #041d4914;
+}
+.login #header {
+    padding: 28px 36px;
+    background: #041d49;
+    border-bottom: 4px solid #ffdf00;
+    justify-content: flex-start;
+}
+.login .realtor-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #ffffff;
+    font-size: 19px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.login .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid #ffdf00;
+    border-radius: 12px;
+    color: #ffdf00;
+    font-family: Georgia, serif;
+    font-size: 22px;
+}
+.login .brand-caption {
+    display: block;
+    margin-top: 4px;
+    color: #d1deea;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: .04em;
+}
+.login #content { padding: 34px 36px 28px; }
+.login .login-eyebrow {
+    margin: 0 0 10px;
+    color: #06306c;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .16em;
+}
+.login .login-intro h1 {
+    margin: 0 0 10px;
+    color: #091a3e;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -.03em;
+}
+.login .login-intro > p:last-child {
+    margin: 0 0 26px;
+    color: #596b7b;
+    font-size: 14px;
+    line-height: 1.6;
+}
+.login .form-row { padding: 0 0 18px; }
+.login .form-row label {
+    margin-bottom: 7px;
+    color: #091a3e;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+.login .form-row #id_username,
+.login .form-row #id_password {
+    padding: 13px 14px;
+    border: 1px solid #b7c8d6;
+    border-radius: 6px;
+    background: #fff;
+    color: #091a3e;
+    font-size: 16px;
+}
+.login input:focus-visible, .login a:focus-visible {
+    outline: 3px solid #007e75;
+    outline-offset: 3px;
+}
+.login .submit-row { padding: 6px 0 0; background: transparent; border: 0; }
+.login .submit-row input {
+    width: 100%;
+    min-height: 46px;
+    padding: 13px;
+    border-radius: 8px;
+    background: #007e75;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.login .submit-row input:hover { background: #00665f; }
+.login .errornote {
+    padding: 12px 14px;
+    border: 1px solid #e6bdb7;
+    border-radius: 8px;
+    background: #fff3f0;
+    color: #a12626;
+}
+.login .errorlist { color: #a12626; }
+.login .login-footer {
+    clear: both;
+    margin: 26px 0 0;
+    padding-top: 22px;
+    border-top: 1px solid #d1deea;
+    text-align: center;
+    font-size: 13px;
+}
+.login .login-footer a { color: #06306c; }
+@media (max-width: 480px) {
+    .login #header { padding: 24px; }
+    .login #content { padding: 28px 24px 24px; }
+}
