@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: ck-realestate
+    runtime: python
+    branch: main
+    plan: starter
+    buildCommand: pip install -r requirements-deploy.txt && python manage.py collectstatic --noinput
+    startCommand: python manage.py migrate --noinput && python manage.py seed_demo_realtor && exec gunicorn --bind "0.0.0.0:$PORT" config.wsgi:application
+    healthCheckPath: /
+    disk:
+      name: ck-realestate-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.12
+      - key: DJANGO_DATA_DIR
+        value: /var/data
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DEMO_REALTOR_USERNAME
+        sync: false
+      - key: DEMO_REALTOR_PASSWORD
+        sync: false

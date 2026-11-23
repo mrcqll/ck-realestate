@@ -144,8 +144,20 @@ python manage.py test
 python manage.py check
 ```
 
-The current application has no property models or browsing pages beyond the
-public homepage. The tests exercise the existing admin user/group management
-pages, direct GET/POST access, staff model permissions, generic authentication
-failures, redirects, CSRF, logout, and public homepage access. Future property
-models should be registered with the existing admin to inherit these protections.
+## Professor demo deployment
+
+Deploy `main` as a Render Blueprint using `render.yaml`. Provide
+`DEMO_REALTOR_USERNAME` and `DEMO_REALTOR_PASSWORD` as service environment secrets.
+Render generates `DJANGO_SECRET_KEY`. The Starter service mounts `/var/data` for
+the SQLite database and listing photos. The start command runs migrations and
+`seed_demo_realtor` against the mounted disk before starting Gunicorn.
+
+`seed_demo_realtor` creates an active staff user with view, add, change, and delete
+permissions for listings. On later runs it checks the configured credentials and
+permissions and preserves the account. If a username already exists with a
+different password or role, the command fails and leaves the account intact.
+
+GitHub Pages publishes `main` from `/docs` as the static project entry point.
+If Render assigns a different hostname, update the Realtor Login link in
+`docs/index.html`. Django serves `/admin/login/` and the listing admin at
+`/admin/properties/listing/` on the Render service.
