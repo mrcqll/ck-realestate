@@ -146,6 +146,73 @@ python manage.py check
 
 ## Professor demo deployment
 
+### PythonAnywhere
+
+The `develop` branch already on GitHub includes the settings and demo seed
+command you need. In a PythonAnywhere Bash console, run:
+
+```bash
+cd ~
+git clone --branch develop --single-branch https://github.com/mrcqll/ck-realestate.git
+cd ck-realestate
+python3.12 -m venv ~/.virtualenvs/ck-realestate
+source ~/.virtualenvs/ck-realestate/bin/activate
+python -m pip install -r requirements.txt
+mkdir -p -m 700 ~/ck-realestate-data
+umask 077
+touch .env
+chmod 600 .env
+```
+
+Edit `/home/USERNAME/ck-realestate/.env` in the PythonAnywhere Files tab.
+Replace `USERNAME` in filesystem paths with your account name. Use the exact
+hostname shown on the Web tab and generate a fresh secret key and demo password.
+
+```dotenv
+DJANGO_SECRET_KEY='your-generated-secret-key'
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=USERNAME.pythonanywhere.com
+DJANGO_DATA_DIR=/home/USERNAME/ck-realestate-data
+DEMO_REALTOR_USERNAME=professor-demo
+DEMO_REALTOR_PASSWORD='your-generated-demo-password'
+```
+
+On the Web tab, create a web app with **Manual configuration** and **Python
+3.12**. Set the virtualenv to `/home/USERNAME/.virtualenvs/ck-realestate` and
+replace the linked WSGI configuration with:
+
+```python
+import sys
+
+sys.path.insert(0, "/home/USERNAME/ck-realestate")
+
+from config.wsgi import application
+```
+
+Map `/static/` to `/home/USERNAME/ck-realestate/staticfiles` and enable
+**Force HTTPS**. Leave `/media/` unmapped so Django can enforce listing photo
+permissions.
+
+From the project directory with the virtualenv active, run these commands on
+each deployment, then reload the web app:
+
+```bash
+python manage.py migrate --noinput &&
+python manage.py seed_demo_realtor &&
+python manage.py collectstatic --noinput
+```
+
+Keep the same private `.env` and data directory across deployments. From a
+private browser window, open `/admin/login/` over HTTPS, sign in, and open
+**Listings**. After another deployment, repeat with the same credentials.
+
+The deployed GitHub Pages button currently points to Render. Share the direct
+PythonAnywhere `/admin/login/` URL once it is live. To change the Pages button,
+replace the URL in `docs/index.html` with the actual PythonAnywhere login URL
+and publish the updated page.
+
+### Render
+
 Deploy `main` as a Render Blueprint using `render.yaml`. Provide
 `DEMO_REALTOR_USERNAME` and `DEMO_REALTOR_PASSWORD` as service environment secrets.
 Render generates `DJANGO_SECRET_KEY`. The Starter service mounts `/var/data` for
