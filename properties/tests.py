@@ -162,3 +162,10 @@ class RealtorLoginTests(TestCase):
                 self.assertIn(response.status_code, (302, 403))
 
         self.assertEqual(get_user_model().objects.filter(username="intruder").count(), 0)
+
+    def test_admin_branding_and_dashboard_link_present(self):
+        self.client.force_login(self.realtor)
+        response = self.client.get(reverse("admin:index"))
+        self.assertContains(response, 'id="site-name"')
+        self.assertContains(response, 'href="/admin/"')
+        self.assertContains(response, 'id="logout-form"')
